@@ -3,3 +3,4 @@ print(x)
 x = x + " again"
 print(x)
 #hello4
+print("test")
