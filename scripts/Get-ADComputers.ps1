@@ -3,9 +3,9 @@
 Gets computer accounts from Active Directory.
 
 .DESCRIPTION
-Queries Active Directory for computer objects and returns a practical set of
-inventory properties. Results can be displayed in the console or exported to a
-CSV file.
+Queries Active Directory for computer objects and returns the first 20 results
+with Name, Enabled, and OperatingSystem. Results can be displayed in the console
+or exported to a CSV file.
 
 .PARAMETER SearchBase
 Optional distinguished name of the OU or container to search.
@@ -63,13 +63,8 @@ if ($PSBoundParameters.ContainsKey('Enabled')) {
 $getComputerParams = @{
     Filter     = $filterParts -join ' -and '
     Properties = @(
-        'DNSHostName',
         'Enabled',
-        'IPv4Address',
-        'LastLogonDate',
-        'OperatingSystem',
-        'OperatingSystemVersion',
-        'WhenCreated'
+        'OperatingSystem'
     )
 }
 
@@ -79,15 +74,10 @@ if ($SearchBase) {
 
 $computers = @(Get-ADComputer @getComputerParams |
     Select-Object Name,
-        DNSHostName,
         Enabled,
-        IPv4Address,
-        OperatingSystem,
-        OperatingSystemVersion,
-        LastLogonDate,
-        WhenCreated,
-        DistinguishedName |
-    Sort-Object Name)
+        OperatingSystem |
+    Sort-Object Name |
+    Select-Object -First 20)
 
 if ($OutputCsv) {
     $outputDirectory = Split-Path -Path $OutputCsv -Parent
